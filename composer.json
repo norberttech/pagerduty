@@ -1,5 +1,5 @@
 {
-    "name": "norerttech/pagerduty",
+    "name": "norberttech/pagerduty",
     "description": "Fork of adilbaig/pagerduty - PHP wrapper to PagerDuty Events API.",
     "keywords": ["pagerduty", "rest"],
     "homepage": "https://github.com/adilbaig/pagerduty",
