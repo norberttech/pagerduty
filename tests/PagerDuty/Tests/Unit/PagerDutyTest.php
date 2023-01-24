@@ -5,14 +5,17 @@
  * ./vendor/bin/phpunit test
  */
 
+namespace PagerDuty\Tests\Unit;
+
 use PagerDuty\AcknowledgeEvent;
 use PagerDuty\ResolveEvent;
 use PagerDuty\TriggerEvent;
+use PHPUnit\Framework\TestCase;
 
-class PagerDutyTest extends \PHPUnit\Framework\TestCase
+final class PagerDutyTest extends TestCase
 {
 
-    public function testAckEvent()
+    public function test_ack_event() : void
     {
         $routingKey = 'sv123';
         $dedupKey = 'inc123';
@@ -23,7 +26,7 @@ class PagerDutyTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expect, $event->toArray());
     }
 
-    public function testResolveEvent()
+    public function test_resolve_event() : void
     {
         $routingKey = 'sv123';
         $dedupKey = 'inc123';
@@ -34,7 +37,7 @@ class PagerDutyTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expect, $event->toArray());
     }
 
-    public function testTriggerEvent()
+    public function test_trigger_event() : void
     {
         $routingKey = 'sv123';
 
@@ -48,8 +51,7 @@ class PagerDutyTest extends \PHPUnit\Framework\TestCase
             ->addLink('http://acme.pagerduty.com', 'View the incident on PagerDuty')
             ->addImage('https://chart.googleapis.com/chart?chs=600x400&chd=t:6,2,9,5,2,5,7,4,8,2,1&cht=lc&chds=a&chxt=y&chm=D,0033FF,0,0,5,1')
             ->addImage('https://chart.googleapis.com/chart?chs=600x400&chd=t:6,2,9,5,2,5,7,4,8,2,1&cht=lc&chds=a&chxt=y&chm=D,0033FF,0,0,5,2', 'http://acme.pagerduty.com/href')
-            ->addImage('https://chart.googleapis.com/chart?chs=600x400&chd=t:6,2,9,5,2,5,7,4,8,2,1&cht=lc&chds=a&chxt=y&chm=D,0033FF,0,0,5,3', 'http://acme.pagerduty.com/href', 'Zig Zag')
-        ;
+            ->addImage('https://chart.googleapis.com/chart?chs=600x400&chd=t:6,2,9,5,2,5,7,4,8,2,1&cht=lc&chds=a&chxt=y&chm=D,0033FF,0,0,5,3', 'http://acme.pagerduty.com/href', 'Zig Zag');
 
         $this->assertArrayNotHasKey('dedup_key', $event->toArray());
 
@@ -82,7 +84,7 @@ class PagerDutyTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expect, $event->toArray());
     }
 
-    public function testTriggerHashEvent()
+    public function test_trigger_hash_event() : void
     {
         $routingKey = 'sv123';
 
@@ -90,14 +92,13 @@ class PagerDutyTest extends \PHPUnit\Framework\TestCase
         $event = new TriggerEvent($routingKey, $msg, 'localhost', TriggerEvent::ERROR, true);
 
         $expect = ['dedup_key' => 'md5-' . md5($msg)];
-        $this->assertArraySubset($expect, $event->toArray());
+        $this->assertEquals($expect, ['dedup_key' => $event->toArray()['dedup_key']]);
     }
 
-    /**
-     * @expectedException TypeError
-     */
-    public function testTypeError()
+    public function test_type_error() : void
     {
+        $this->expectException(\TypeError::class);
+
         $event = new TriggerEvent('sv123', 'Blah');
         $event->setDetails(null);
     }

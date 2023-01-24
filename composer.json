@@ -1,6 +1,6 @@
 {
-    "name": "adilbaig/pagerduty",
-    "description": "PHP wrapper to PagerDuty Events API.",
+    "name": "norerttech/pagerduty",
+    "description": "Fork of adilbaig/pagerduty - PHP wrapper to PagerDuty Events API.",
     "keywords": ["pagerduty", "rest"],
     "homepage": "https://github.com/adilbaig/pagerduty",
     "license": "MIT",
@@ -9,15 +9,24 @@
         "homepage": "https://github.com/adilbaig"
     }],
     "require": {
-        "php": ">=5.4.0",
+        "php": "~8.1 || ~8.2",
         "ext-curl": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": ">=5.6"
+        "phpunit/phpunit": "~9.5"
     },
     "autoload": {
-        "psr-0": {
-            "PagerDuty": "src"
-        }
+        "psr-4": { "PagerDuty\\" : "src/PagerDuty/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "PagerDuty\\Tests\\" : "tests/PagerDuty/Tests/" }
+    },
+    "scripts": {
+        "test": [
+            "@test:unit"
+        ],
+        "test:unit": [
+            "vendor/bin/phpunit"
+        ]
     }
 }

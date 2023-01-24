@@ -3,6 +3,8 @@ PHP PagerDuty Events API
 PHP implementation of the [PagerDuty Events API V2](https://v2.developer.pagerduty.com/docs/events-api-v2)
 
 
+> This repository is a fork of adilbaig/pagerduty that seems to not be maintained anymore.
+
 UPGRADE NOTICE
 ---
 The [PagerDuty Events API V2](https://v2.developer.pagerduty.com/docs/events-api-v2) is **not backwards compatible** with the [PagerDuty Events API V1](https://v2.developer.pagerduty.com/docs/events-api). Hence, this API has changed. If you are upgrading from a [2.* release](https://github.com/adilbaig/pagerduty/releases), make sure you pay attention to the contructor of the `TriggerEvent`
@@ -25,7 +27,7 @@ Add this line to your project's `composer.json`
 {
 ...
     "require": {
-        "adilbaig/pagerduty": "3.*"
+        "norberttech/pagerduty": "3.*"
     }
 ...
 }

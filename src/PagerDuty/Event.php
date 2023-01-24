@@ -3,6 +3,7 @@
 namespace PagerDuty;
 
 use PagerDuty\Exceptions\PagerDutyException;
+use ReturnTypeWillChange;
 
 /**
  * An abstract Event
@@ -12,7 +13,10 @@ use PagerDuty\Exceptions\PagerDutyException;
 abstract class Event implements \ArrayAccess, \JsonSerializable
 {
 
-    protected $dict;
+    /**
+     * @var array<string, string>
+     */
+    protected array $dict;
 
     /**
      * ctor
@@ -20,7 +24,7 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
      * @param string $routingKey
      * @param string $type - One of 'trigger', 'acknowledge' or 'resolve'
      */
-    protected function __construct($routingKey, $type)
+    protected function __construct(string $routingKey, string $type)
     {
         $this->dict['routing_key'] = (string) $routingKey;
         $this->dict['event_action'] = (string) $type;
@@ -95,11 +99,13 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
     }
     /* -------- ArrayAccess -------- */
 
+    #[ReturnTypeWillChange]
     public function offsetExists($key)
     {
         return array_key_exists($key, $this->dict);
     }
 
+    #[ReturnTypeWillChange]
     public function offsetGet($key)
     {
         if (!$this->offsetExists($key)) {
@@ -109,6 +115,7 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
         return $this->dict[$key];
     }
 
+    #[ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
         if (empty($key) || is_string($key)) {
@@ -118,6 +125,7 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
         $this->dict[$key] = $value;
     }
 
+    #[ReturnTypeWillChange]
     public function offsetUnset($key)
     {
         if ($this->offsetExists($key)) {
@@ -126,6 +134,7 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
     }
     /* -------- JsonSerializable -------- */
 
+    #[ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toArray();
