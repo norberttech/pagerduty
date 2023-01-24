@@ -26,7 +26,7 @@ Add this line to your project's `composer.json`
 {
 ...
     "require": {
-        "norberttech/pagerduty": "3.*"
+        "norberttech/pagerduty": "4.*"
     }
 ...
 }
