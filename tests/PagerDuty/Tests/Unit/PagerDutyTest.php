@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * cd into root
- * ./vendor/bin/phpunit test
+ * ./vendor/bin/phpunit test.
  */
 
 namespace PagerDuty\Tests\Unit;
@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 
 final class PagerDutyTest extends TestCase
 {
-
     public function test_ack_event() : void
     {
         $routingKey = 'sv123';
@@ -72,13 +71,13 @@ final class PagerDutyTest extends TestCase
             ],
             'links' => [
                 ['href' => 'http://acme.pagerduty.com'],
-                ['href' => 'http://acme.pagerduty.com', 'text' => 'View the incident on PagerDuty']
+                ['href' => 'http://acme.pagerduty.com', 'text' => 'View the incident on PagerDuty'],
             ],
             'images' => [
                 ['src' => 'https://chart.googleapis.com/chart?chs=600x400&chd=t:6,2,9,5,2,5,7,4,8,2,1&cht=lc&chds=a&chxt=y&chm=D,0033FF,0,0,5,1'],
                 ['src' => 'https://chart.googleapis.com/chart?chs=600x400&chd=t:6,2,9,5,2,5,7,4,8,2,1&cht=lc&chds=a&chxt=y&chm=D,0033FF,0,0,5,2', 'href' => 'http://acme.pagerduty.com/href'],
                 ['src' => 'https://chart.googleapis.com/chart?chs=600x400&chd=t:6,2,9,5,2,5,7,4,8,2,1&cht=lc&chds=a&chxt=y&chm=D,0033FF,0,0,5,3', 'href' => 'http://acme.pagerduty.com/href', 'alt' => 'Zig Zag'],
-            ]
+            ],
         ];
 
         $this->assertEquals($expect, $event->toArray());
@@ -91,7 +90,7 @@ final class PagerDutyTest extends TestCase
         $msg = 'FAILURE for production/HTTP on machine srv01.acme.com';
         $event = new TriggerEvent($routingKey, $msg, 'localhost', TriggerEvent::ERROR, true);
 
-        $expect = ['dedup_key' => 'md5-' . md5($msg)];
+        $expect = ['dedup_key' => 'md5-' . \md5($msg)];
         $this->assertEquals($expect, ['dedup_key' => $event->toArray()['dedup_key']]);
     }
 

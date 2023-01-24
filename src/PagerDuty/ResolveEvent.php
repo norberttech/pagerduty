@@ -1,16 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace PagerDuty;
 
 /**
- * A 'resolve' Event
+ * A 'resolve' Event.
  *
  * @author adil
  */
 class ResolveEvent extends Event
 {
-
-    public function __construct($routingKey, $dedupKey)
+    public function __construct(string $routingKey, string $dedupKey)
     {
         parent::__construct($routingKey, 'resolve');
 

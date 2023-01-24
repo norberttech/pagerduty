@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace PagerDuty;
 
@@ -6,20 +6,19 @@ use PagerDuty\Exceptions\PagerDutyException;
 use ReturnTypeWillChange;
 
 /**
- * An abstract Event
+ * An abstract Event.
  *
  * @author adil
  */
 abstract class Event implements \ArrayAccess, \JsonSerializable
 {
-
     /**
      * @var array<string, string>
      */
     protected array $dict;
 
     /**
-     * ctor
+     * ctor.
      *
      * @param string $routingKey
      * @param string $type - One of 'trigger', 'acknowledge' or 'resolve'
@@ -32,7 +31,7 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
 
     /**
      * A unique key to identify an outage.
-     * Multiple events with the same $key will be grouped into one open incident. From the PD docs :
+     * Multiple events with the same $key will be grouped into one open incident. From the PD docs :.
      *
      * `Submitting subsequent events for the same `dedup_key` will result in those events being applied to an open alert
      * matching that `dedup_key`. Once the alert is resolved, any further events with the same `dedup_key` will create a
@@ -44,9 +43,10 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
      *
      * @return self
      */
-    public function setDeDupKey($key)
+    public function setDeDupKey(string $key) : self
     {
-        $this->dict['dedup_key'] = substr((string) $key, 0, 255);
+        $this->dict['dedup_key'] = \substr((string) $key, 0, 255);
+
         return $this;
     }
 
@@ -56,40 +56,37 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
      *
      * @return array
      */
-    public function toArray()
+    public function toArray() : array
     {
         return $this->dict;
     }
 
     /**
-     * Send the event to PagerDuty
+     * Send the event to PagerDuty.
      *
-     * @param array $result (Opt)(Pass by reference) - If this parameter is given the result of the CURL call will be filled here. The response is an associative array.
+     * @param mixed[]|null $result (Opt)(Pass by reference) - If this parameter is given the result of the CURL call will be filled here. The response is an associative array.
      *
      * @throws PagerDutyException - If status code == 400
      *
      * @return int - HTTP response code
-     *  202 - Event Processed
-     *  400 - Invalid Event. Throws a PagerDutyException
-     *  403 - Rate Limited. Slow down and try again later.
+     *             202 - Event Processed
+     *             400 - Invalid Event. Throws a PagerDutyException
+     *             403 - Rate Limited. Slow down and try again later.
      */
-    public function send(&$result = null)
+    public function send(array &$result = null) : int
     {
-        $jsonStr = json_encode($this);
+        $jsonStr = \json_encode($this, JSON_THROW_ON_ERROR);
 
-        $curl = curl_init("https://events.pagerduty.com/v2/enqueue");
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $jsonStr);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($jsonStr),
-        ));
+        $curl = \curl_init('https://events.pagerduty.com/v2/enqueue');
+        \curl_setopt($curl, CURLOPT_POST, 1);
+        \curl_setopt($curl, CURLOPT_POSTFIELDS, $jsonStr);
+        \curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        \curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Content-Length: ' . \strlen($jsonStr)]);
 
-        $result = json_decode(curl_exec($curl), true);
+        $result = \json_decode(\curl_exec($curl), true, 512, JSON_THROW_ON_ERROR);
 
-        $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
+        $responseCode = \curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        \curl_close($curl);
 
         if ($responseCode == 400) {
             throw new PagerDutyException($result['message'], $result['errors']);
@@ -99,34 +96,34 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
     }
     /* -------- ArrayAccess -------- */
 
-    #[ReturnTypeWillChange]
-    public function offsetExists($key)
+    #[\ReturnTypeWillChange]
+    public function offsetExists($key) : bool
     {
-        return array_key_exists($key, $this->dict);
+        return \array_key_exists($key, $this->dict);
     }
 
-    #[ReturnTypeWillChange]
-    public function offsetGet($key)
+    #[\ReturnTypeWillChange]
+    public function offsetGet($key) : mixed
     {
         if (!$this->offsetExists($key)) {
-            return;
+            return null;
         }
 
         return $this->dict[$key];
     }
 
-    #[ReturnTypeWillChange]
-    public function offsetSet($key, $value)
+    #[\ReturnTypeWillChange]
+    public function offsetSet($key, $value) : void
     {
-        if (empty($key) || is_string($key)) {
-            throw new \Exception("Key must be a non-empty string. It is `" . var_export($key, true) . "`");
+        if (empty($key) || \is_string($key)) {
+            throw new \Exception('Key must be a non-empty string. It is `' . \var_export($key, true) . '`');
         }
 
         $this->dict[$key] = $value;
     }
 
-    #[ReturnTypeWillChange]
-    public function offsetUnset($key)
+    #[\ReturnTypeWillChange]
+    public function offsetUnset($key) : void
     {
         if ($this->offsetExists($key)) {
             unset($this->dict[$key]);
@@ -134,8 +131,8 @@ abstract class Event implements \ArrayAccess, \JsonSerializable
     }
     /* -------- JsonSerializable -------- */
 
-    #[ReturnTypeWillChange]
-    public function jsonSerialize()
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize() : mixed
     {
         return $this->toArray();
     }

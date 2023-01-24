@@ -2,7 +2,6 @@ PHP PagerDuty Events API
 =========
 PHP implementation of the [PagerDuty Events API V2](https://v2.developer.pagerduty.com/docs/events-api-v2)
 
-
 > This repository is a fork of adilbaig/pagerduty that seems to not be maintained anymore.
 
 UPGRADE NOTICE

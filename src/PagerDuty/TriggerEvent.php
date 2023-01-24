@@ -1,81 +1,75 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace PagerDuty;
 
 /**
- * A 'trigger' event
+ * A 'trigger' event.
+ *
  * @link https://developer.pagerduty.com/docs/events-api-v2/trigger-events/
  *
  * @author adil
  */
 class TriggerEvent extends Event
 {
+    final public const CRITICAL = 'critical';
 
-    const CRITICAL = 'critical';
-    const ERROR = 'error';
-    const WARNING = 'warning';
-    const INFO = 'info';
+    final public const ERROR = 'error';
 
-    /**
-     *
-     * @var bool
-     */
-    private $autoDeDupKey;
+    final public const WARNING = 'warning';
+
+    final public const INFO = 'info';
 
     /**
-     * Ctor
+     * Ctor.
      *
      * @param string $routingKey - The routing key, taken from your PagerDuty 'Configuration' > 'Services' page
      * @param string $summary - The Error message
-     * @param string $source - The unique location of the affected system, preferably a hostname or FQDN.
+     * @param string $source - The unique location of the affected system, preferably a hostname or FQDN
      * @param string $severity - One of 'critical', 'error', 'warning' or 'info'. Use the constants above
-     * @param boolean $autoDeDupKey - If true, autogenerates a `dedup_key` based on the md5 hash of the $summary
+     * @param bool $autoDeDupKey - If true, autogenerates a `dedup_key` based on the md5 hash of the $summary
      */
-    public function __construct($routingKey, $summary, $source, $severity, $autoDeDupKey = false)
+    public function __construct(string $routingKey, string $summary, string $source, string $severity, private readonly bool $autoDeDupKey = false)
     {
         parent::__construct($routingKey, 'trigger');
         $this->setPayloadSummary($summary);
         $this->setPayloadSource($source);
         $this->setPayloadSeverity($severity);
-
-        $this->autoDeDupKey = (bool) $autoDeDupKey;
     }
 
     /**
      * A human-readable error message.
      * This is what PD will read over the phone.
      *
-     * @param string $summary
      *
-     * @return self
      */
-    public function setPayloadSummary($summary)
+    public function setPayloadSummary(string $summary) : self
     {
-        $this->dict['payload']['summary'] = (string) $summary;
+        $this->dict['payload']['summary'] = $summary;
+
         return $this;
     }
 
     /**
      * The unique location of the affected system, preferably a hostname or FQDN.
      *
-     * @param string $source
-     * @return self
+     *
      */
-    public function setPayloadSource($source)
+    public function setPayloadSource(string $source) : self
     {
-        $this->dict['payload']['source'] = (string) $source;
+        $this->dict['payload']['source'] = $source;
+
         return $this;
     }
 
     /**
-     * One of critical, error, warning or info. Use the class constants above
+     * One of critical, error, warning or info. Use the class constants above.
      *
-     * @param string $value
-     * @return self
+     *
      */
-    public function setPayloadSeverity($value)
+    public function setPayloadSeverity(string $value) : self
     {
-        $this->dict['payload']['severity'] = (string) $value;
+        $this->dict['payload']['severity'] = $value;
+
         return $this;
     }
 
@@ -83,59 +77,57 @@ class TriggerEvent extends Event
      * The time this error occured.
      *
      * @param string $timestamp - Can be a datetime string as well. See the example @ https://v2.developer.pagerduty.com/docs/send-an-event-events-api-v2
-     * @return self
      */
-    public function setPayloadTimestamp($timestamp)
+    public function setPayloadTimestamp(string $timestamp) : self
     {
-        $this->dict['payload']['timestamp'] = (string) $timestamp;
+        $this->dict['payload']['timestamp'] = $timestamp;
+
         return $this;
     }
 
     /**
-     * From the PD docs: "Component of the source machine that is responsible for the event, for example `mysql` or `eth0`"
+     * From the PD docs: "Component of the source machine that is responsible for the event, for example `mysql` or `eth0`".
      *
-     * @param string $value
-     * @return self
+     *
      */
-    public function setPayloadComponent($value)
+    public function setPayloadComponent(string $value) : self
     {
-        $this->dict['payload']['component'] = (string) $value;
+        $this->dict['payload']['component'] = $value;
+
         return $this;
     }
 
     /**
-     * From the PD docs: "Logical grouping of components of a service, for example `app-stack`"
+     * From the PD docs: "Logical grouping of components of a service, for example `app-stack`".
      *
-     * @param string $value
-     * @return self
+     *
      */
-    public function setPayloadGroup($value)
+    public function setPayloadGroup(string $value) : self
     {
-        $this->dict['payload']['group'] = (string) $value;
+        $this->dict['payload']['group'] = $value;
+
         return $this;
     }
 
     /**
-     * From the PD docs: "The class/type of the event, for example `ping failure` or `cpu load`"
+     * From the PD docs: "The class/type of the event, for example `ping failure` or `cpu load`".
      *
-     * @param string $value
-     * @return self
+     *
      */
-    public function setPayloadClass($value)
+    public function setPayloadClass(string $value) : self
     {
-        $this->dict['payload']['class'] = (string) $value;
+        $this->dict['payload']['class'] = $value;
+
         return $this;
     }
 
     /**
-     * An associative array of additional details about the event and affected system
-     *
-     * @param array $dict
-     * @return self
+     * An associative array of additional details about the event and affected system.
      */
-    public function setPayloadCustomDetails(array $dict)
+    public function setPayloadCustomDetails(array $dict) : self
     {
         $this->dict['payload']['custom_details'] = $dict;
+
         return $this;
     }
 
@@ -144,20 +136,19 @@ class TriggerEvent extends Event
      *
      * @link https://developer.pagerduty.com/docs/events-api-v2/trigger-events/#the-links-property
      *
-     * @param string $href URL of the link to be attached.
-     * @param string $text Optional. Plain text that describes the purpose of the link, and can be used as the link's text.
-     *
-     * @return self
+     * @param string $href URL of the link to be attached
+     * @param string|null $text Optional. Plain text that describes the purpose of the link, and can be used as the link's text.
      */
-    public function addLink($href, $text = null)
+    public function addLink(string $href, string $text = null) : self
     {
-        if (!array_key_exists('links', $this->dict)) {
+        if (!\array_key_exists('links', $this->dict)) {
             $this->dict['links'] = [];
         }
 
-        $link = ['href' => (string) $href];
+        $link = ['href' => $href];
+
         if (!empty($text)) {
-            $link['text'] = (string) $text;
+            $link['text'] = $text;
         }
         $this->dict['links'][] = $link;
 
@@ -170,21 +161,21 @@ class TriggerEvent extends Event
      * @link https://developer.pagerduty.com/docs/events-api-v2/trigger-events/#the-images-property
      *
      * @param string $src The source (URL) of the image being attached to the incident. This image must be served via HTTPS.
-     * @param string $href Optional URL; makes the image a clickable link.
-     * @param string $alt Optional alternative text for the image.
-     *
-     * @return self
+     * @param string|null $href optional URL; makes the image a clickable link
+     * @param string|null $alt optional alternative text for the image
      */
-    public function addImage($src, $href = null, $alt = null)
+    public function addImage(string $src, string $href = null, string $alt = null) : self
     {
-        if (!array_key_exists('images', $this->dict)) {
+        if (!\array_key_exists('images', $this->dict)) {
             $this->dict['images'] = [];
         }
 
         $image = ['src' => (string) $src];
+
         if (!empty($href)) {
             $image['href'] = (string) $href;
         }
+
         if (!empty($alt)) {
             $image['alt'] = (string) $alt;
         }
@@ -193,11 +184,12 @@ class TriggerEvent extends Event
         return $this;
     }
 
-    public function toArray()
+    public function toArray() : array
     {
         if ($this->autoDeDupKey) {
-            $this->setDeDupKey("md5-" . md5($this->dict['payload']['summary']));
+            $this->setDeDupKey('md5-' . \md5((string) $this->dict['payload']['summary']));
         }
+
         return $this->dict;
     }
 }

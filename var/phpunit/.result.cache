@@ -1,1 +1,0 @@
-{"version":1,"defects":[],"times":{"PagerDuty\\Tests\\Unit\\PagerDutyTest::test_ack_event":0.001,"PagerDuty\\Tests\\Unit\\PagerDutyTest::test_resolve_event":0,"PagerDuty\\Tests\\Unit\\PagerDutyTest::test_trigger_event":0,"PagerDuty\\Tests\\Unit\\PagerDutyTest::test_trigger_hash_event":0,"PagerDuty\\Tests\\Unit\\PagerDutyTest::test_type_error":0}}

@@ -1,28 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace PagerDuty\Exceptions;
 
 /**
- * PagerDutyException
+ * PagerDutyException.
  *
  * @author adil
  */
 class PagerDutyException extends \Exception
 {
-
-    protected $errors;
-
-    public function __construct($message, array $errors)
+    public function __construct($message, protected array $errors)
     {
         parent::__construct($message);
-        $this->errors = $errors;
     }
 
-    /**
-     * 
-     * @return array
-     */
-    public function getErrors()
+    public function getErrors() : array
     {
         return $this->errors;
     }
